@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<title>Regular Expressions</title>
+
+</head>
+<body>
+    <p id="timer">30 s</p>
+    <p id="instruction">Wpisz wyraz wg. wzoru (masz 30s):</p>
+    <input type="text"  id="input-text">
+    <button id="start-btn" onclick="startGame()">Start</button>
+   
+</body>
+</html>
+
+<script>
+let timerDisplay = document.getElementById("timer");
+let instructionDisplay = document.getElementById("instruction");
+let startBtn = document.getElementById("start-btn");
+let inputText = document.getElementById("input-text");
+let regexList = ["^a", "sab$", "[1-3]", "3\\+4\\=7", "^komputer$", "abc[^abc]", "[3-6]{3}", "\\bhttps"];
+let timeRemaining = 30;
+let gameStarted = false;
+let timerId = 0;
+let regexObj = "";
+let score = 0;
+
+let countDown = function() {
+  timeRemaining--;
+  timerDisplay.innerText = `${timeRemaining} s`;
+  if (timeRemaining <= 0) {
+    endGame();
+  }
+};
+
+let endGame = function() {
+  window.clearInterval(timerId);
+  timerDisplay.innerText = "";
+  let timeElapsed = 30 - timeRemaining;
+  instructionDisplay.innerHTML = `<h1>Game Over</h1><h1>Score: ${score}</h1><h1>Time: ${timeElapsed}</h1>`;
+  inputText.value = "";
+  inputText.disabled = true;
+  startBtn.disabled = true;
+  inputText.style.background = "white";
+};
+
+let startGame = function() {
+  if (!gameStarted) {
+    timerId = window.setInterval(countDown, 1000);
+    gameStarted = true;
+  }
+  if (regexList.length <= 0) {
+    endGame();
+  } else {
+    if (startBtn.textContent === "Next") {
+      document.getElementById("input-text").value = "";
+      inputText.style.background = "white";
+    }
+    startBtn.textContent = "Submit";
+    instructionDisplay.innerText = regexList[0];
+    regexObj = new RegExp(regexList[0]);
+    if (regexObj.test(document.getElementById("input-text").value)) {
+      inputText.style.background = "green";
+      regexList.shift();
+      score++;
+      startBtn.textContent = "Next";
+    } else if (document.getElementById("input-text").value !== "") {
+      inputText.style.background = "red";
+    }
+  }
+};
+</script>
